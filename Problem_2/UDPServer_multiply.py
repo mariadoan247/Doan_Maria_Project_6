@@ -1,4 +1,5 @@
 from socket import *
+import re
 # Create a UDP socket
 serverSocket = socket(AF_INET, SOCK_DGRAM)
 # Bind the socket to the local IP and port 12345
@@ -16,5 +17,12 @@ while True:
     message = messageBytes.decode("utf-8")
     print(f'message from {clientIP}:{clientPort} = {message}')
     # Send a message encoded in the UTF-8 format through the socket
-    modifiedMessage = message.upper()
+    if re.match('[0-9]+(,[0-9]+)*$', message):
+        digits = [int(x) for x in message.split(',')]
+        product = 1
+        for num in digits:
+            product *= num
+        modifiedMessage = str(product)
+    else:
+        modifiedMessage = "Invalid input"
     serverSocket.sendto(modifiedMessage.encode("utf-8"), clientAddress)
